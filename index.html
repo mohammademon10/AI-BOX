@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI BOX | 100+ Top AI Tools</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-glow: 0 0 20px rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- BACKGROUND ANIMATION --- */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #020617 100%);
+        }
+
+        /* --- LAYOUT & TYPOGRAPHY --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 5rem 0 3rem 0;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--accent), var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* --- CONTROLS SECTION --- */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .search-bar:focus + i {
+            color: var(--primary);
+        }
+
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            background: rgba(255,255,255,0.03);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 30px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            color: white;
+        }
+
+        .btn.active {
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn.active::before {
+            opacity: 1;
+        }
+
+        /* --- GRID & CARDS --- */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding-bottom: 5rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        /* Staggered animation delay handled in JS */
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--card-glow);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .card:hover .icon-box {
+            background: var(--primary);
+            color: white;
+            transform: rotate(5deg);
+        }
+
+        .category-badge {
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Category Specific Colors */
+        .card[data-cat="chatbot"] .category-badge { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
+        .card[data-cat="image"] .category-badge { color: #f472b6; background: rgba(236, 72, 153, 0.1); }
+        .card[data-cat="coding"] .category-badge { color: #34d399; background: rgba(16, 185, 129, 0.1); }
+        .card[data-cat="video"] .category-badge { color: #fbbf24; background: rgba(245, 158, 11, 0.1); }
+        .card[data-cat="audio"] .category-badge { color: #fb923c; background: rgba(249, 115, 22, 0.1); }
+        .card[data-cat="productivity"] .category-badge { color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+        .card[data-cat="3d"] .category-badge { color: #e879f9; background: rgba(232, 121, 249, 0.1); }
+        .card[data-cat="research"] .category-badge { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .controls { gap: 1.5rem; }
+            .search-bar { font-size: 1rem; }
+            .btn { padding: 8px 16px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Background -->
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>AI BOX Directory</h1>
+            <p class="subtitle">The definitive list of over 100+ of the world's most powerful AI tools. Curated for creators, developers, and visionaries.</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" class="search-bar" placeholder="Search 100+ tools (e.g., 'Kling', 'DeepSeek', 'Research')...">
+            </div>
+            
+            <div class="filter-container">
+                <button class="btn active" onclick="filterSelection('all')">All</button>
+                <button class="btn" onclick="filterSelection('chatbot')">Chatbots</button>
+                <button class="btn" onclick="filterSelection('image')">Visuals</button>
+                <button class="btn" onclick="filterSelection('coding')">Coding</button>
+                <button class="btn" onclick="filterSelection('video')">Video</button>
+                <button class="btn" onclick="filterSelection('audio')">Audio</button>
+                <button class="btn" onclick="filterSelection('productivity')">Productivity</button>
+                <button class="btn" onclick="filterSelection('research')">Research</button>
+                <button class="btn" onclick="filterSelection('3d')">3D & Design</button>
+            </div>
+        </div>
+
+        <div class="ai-grid" id="aiGrid">
+            <!-- Cards injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        /* --- DATA SOURCE (EXPANDED TO ~100 TOP TOOLS) --- */
+        const aiTools = [
+            // --- CHATBOTS & LLMs ---
+            { name: "ChatGPT", category: "chatbot", icon: "fa-message", desc: "OpenAI's industry-leading conversational model.", link: "https://chat.openai.com" },
+            { name: "Gemini", category: "chatbot", icon: "fa-gem", desc: "Google's most capable multimodal AI model.", link: "https://gemini.google.com" },
+            { name: "Claude 3", category: "chatbot", icon: "fa-robot", desc: "Anthropic's ethical AI with massive context window.", link: "https://claude.ai" },
+            { name: "DeepSeek", category: "chatbot", icon: "fa-brain", desc: "Advanced open-source LLM specialized in coding and math.", link: "https://www.deepseek.com" },
+            { name: "Microsoft Copilot", category: "chatbot", icon: "fa-brands fa-microsoft", desc: "AI assistant integrated into Microsoft 365 and Bing.", link: "https://copilot.microsoft.com" },
+            { name: "Perplexity", category: "chatbot", icon: "fa-magnifying-glass-chart", desc: "Real-time AI search engine with citations.", link: "https://www.perplexity.ai" },
+            { name: "Poe", category: "chatbot", icon: "fa-comments", desc: "Quora's platform to access multiple AI models in one place.", link: "https://poe.com" },
+            { name: "HuggingChat", category: "chatbot", icon: "fa-face-smile", desc: "Open-source alternative to ChatGPT by Hugging Face.", link: "https://huggingface.co/chat" },
+            { name: "Character.ai", category: "chatbot", icon: "fa-users", desc: "Chat with AI personas and celebrities.", link: "https://character.ai" },
+            { name: "Mistral Le Chat", category: "chatbot", icon: "fa-wind", desc: "High-performance open weights models from France.", link: "https://chat.mistral.ai" },
+            { name: "Pi", category: "chatbot", icon: "fa-heart", desc: "Inflection AI's emotionally intelligent personal assistant.", link: "https://pi.ai" },
+            { name: "Meta AI", category: "chatbot", icon: "fa-brands fa-meta", desc: "Llama 3 powered assistant across FB, Insta, and WhatsApp.", link: "https://ai.meta.com" },
+            { name: "Grok", category: "chatbot", icon: "fa-x-ray", desc: "xAI's witty chatbot integrated into X (Twitter).", link: "https://grok.x.ai" },
+            { name: "You.com", category: "chatbot", icon: "fa-magnifying-glass", desc: "Personalized AI search assistant.", link: "https://you.com" },
+            { name: "Brave Leo", category: "chatbot", icon: "fa-shield-halved", desc: "Private AI assistant built into Brave Browser.", link: "https://brave.com/leo" },
+            { name: "Phind", category: "chatbot", icon: "fa-terminal", desc: "AI search engine optimized for developers.", link: "https://www.phind.com" },
+
+            // --- IMAGE & ART ---
+            { name: "Midjourney", category: "image", icon: "fa-paintbrush", desc: "The gold standard for artistic, high-fidelity AI art.", link: "https://www.midjourney.com" },
+            { name: "DALL·E 3", category: "image", icon: "fa-image", desc: "Simple yet powerful image gen integrated into ChatGPT.", link: "https://openai.com/dall-e-3" },
+            { name: "Stable Diffusion", category: "image", icon: "fa-cube", desc: "Open-source giant for local generation and control.", link: "https://stability.ai" },
+            { name: "Ideogram", category: "image", icon: "fa-font", desc: "Best-in-class model for rendering text within images.", link: "https://ideogram.ai" },
+            { name: "Krea AI", category: "image", icon: "fa-bolt", desc: "Real-time AI image generation and enhancement.", link: "https://krea.ai" },
+            { name: "Leonardo.ai", category: "image", icon: "fa-palette", desc: "Game asset and artistic generation platform.", link: "https://leonardo.ai" },
+            { name: "Adobe Firefly", category: "image", icon: "fa-pen-nib", desc: "Commercially safe AI art integrated into Photoshop.", link: "https://firefly.adobe.com" },
+            { name: "Playground", category: "image", icon: "fa-layer-group", desc: "User-friendly AI image creator and editor.", link: "https://playground.com" },
+            { name: "Canva Magic", category: "image", icon: "fa-wand-magic-sparkles", desc: "AI design tools for social media and presentations.", link: "https://www.canva.com" },
+            { name: "Civitai", category: "image", icon: "fa-images", desc: "Hub for sharing Stable Diffusion models and LoRAs.", link: "https://civitai.com" },
+            { name: "Magnific AI", category: "image", icon: "fa-expand", desc: "Advanced AI upscaler and enhancer for extreme detail.", link: "https://magnific.ai" },
+            { name: "Clipdrop", category: "image", icon: "fa-scissors", desc: "Suite of AI tools for removing backgrounds and relighting.", link: "https://clipdrop.co" },
+            { name: "Freepik Pikaso", category: "image", icon: "fa-shapes", desc: "Real-time sketching to image generator.", link: "https://www.freepik.com/pikaso" },
+            { name: "Tensor.art", category: "image", icon: "fa-microchip", desc: "Free online platform to run Stable Diffusion models.", link: "https://tensor.art" },
+
+            // --- VIDEO ---
+            { name: "Runway", category: "video", icon: "fa-film", desc: "Creative suite for cinematic AI video generation.", link: "https://runwayml.com" },
+            { name: "Kling AI", category: "video", icon: "fa-video", desc: "High-fidelity realistic video generation model.", link: "https://klingai.com" },
+            { name: "Luma Dream Machine", category: "video", icon: "fa-cloud", desc: "High-quality, realistic video generation.", link: "https://lumalabs.ai/dream-machine" },
+            { name: "Sora", category: "video", icon: "fa-star", desc: "OpenAI's upcoming realistic video model (Preview).", link: "https://openai.com/sora" },
+            { name: "Pika", category: "video", icon: "fa-dragon", desc: "Text-to-video platform specializing in animation.", link: "https://pika.art" },
+            { name: "Hedra", category: "video", icon: "fa-face-laugh", desc: "Character video generation with expressive lip-sync.", link: "https://hedra.com" },
+            { name: "Viggle", category: "video", icon: "fa-person-running", desc: "Controllable character animation and motion.", link: "https://viggle.ai" },
+            { name: "Haiper", category: "video", icon: "fa-wave-square", desc: "Perceptual foundation model for video generation.", link: "https://haiper.ai" },
+            { name: "HeyGen", category: "video", icon: "fa-user-tie", desc: "AI avatars for professional video presentations.", link: "https://www.heygen.com" },
+            { name: "Synthesia", category: "video", icon: "fa-id-card", desc: "Create AI videos from text with digital avatars.", link: "https://www.synthesia.io" },
+            { name: "D-ID", category: "video", icon: "fa-address-card", desc: "Animate photos and create talking avatars.", link: "https://www.d-id.com" },
+            { name: "Opus Clip", category: "video", icon: "fa-scissors", desc: "Repurpose long videos into viral shorts instantly.", link: "https://www.opus.pro" },
+            { name: "InVideo AI", category: "video", icon: "fa-clapperboard", desc: "Generate full videos with stock footage from text.", link: "https://invideo.io/ai" },
+
+            // --- CODING ---
+            { name: "GitHub Copilot", category: "coding", icon: "fa-brands fa-github", desc: "The world's most adopted AI pair programmer.", link: "https://github.com/features/copilot" },
+            { name: "Cursor", category: "coding", icon: "fa-laptop-code", desc: "An AI-first code editor built for speed.", link: "https://cursor.sh" },
+            { name: "Amazon Q", category: "coding", icon: "fa-brands fa-aws", desc: "Generative AI assistant for software development.", link: "https://aws.amazon.com/q" },
+            { name: "Codeium", category: "coding", icon: "fa-code", desc: "Free, fast AI code completion for all IDEs.", link: "https://codeium.com" },
+            { name: "Tabnine", category: "coding", icon: "fa-shield-cat", desc: "Private and secure AI coding assistant.", link: "https://www.tabnine.com" },
+            { name: "Devin", category: "coding", icon: "fa-user-astronaut", desc: "The first fully autonomous AI software engineer.", link: "https://www.cognition-labs.com/devin" },
+            { name: "Replit Ghostwriter", category: "coding", icon: "fa-keyboard", desc: "AI coding partner integrated into Replit IDE.", link: "https://replit.com/ai" },
+            { name: "Cody", category: "coding", icon: "fa-code-branch", desc: "AI coding assistant by Sourcegraph that knows your codebase.", link: "https://sourcegraph.com/cody" },
+            { name: "JetBrains AI", category: "coding", icon: "fa-laptop-file", desc: "AI integrated deeply into IntelliJ and other IDEs.", link: "https://www.jetbrains.com/ai" },
+            { name: "Blackbox AI", category: "coding", icon: "fa-box", desc: "AI coding assistant for solving programming questions.", link: "https://www.blackbox.ai" },
+
+            // --- AUDIO & VOICE ---
+            { name: "ElevenLabs", category: "audio", icon: "fa-microphone-lines", desc: "Leading realistic AI voice cloning and TTS.", link: "https://elevenlabs.io" },
+            { name: "Suno", category: "audio", icon: "fa-music", desc: "Generate radio-quality songs from simple text.", link: "https://suno.com" },
+            { name: "Udio", category: "audio", icon: "fa-radio", desc: "Music generation tool known for high fidelity.", link: "https://www.udio.com" },
+            { name: "Adobe Podcast", category: "audio", icon: "fa-wand-magic", desc: "Enhance speech and remove noise from audio recordings.", link: "https://podcast.adobe.com/enhance" },
+            { name: "Murf.ai", category: "audio", icon: "fa-sliders", desc: "Studio-quality AI voiceovers for video content.", link: "https://murf.ai" },
+            { name: "Soundraw", category: "audio", icon: "fa-headphones", desc: "Royalty-free AI music generator for creators.", link: "https://soundraw.io" },
+            { name: "Voice.ai", category: "audio", icon: "fa-masks-theater", desc: "Real-time AI voice changer.", link: "https://voice.ai" },
+            { name: "Lalal.ai", category: "audio", icon: "fa-music", desc: "High-quality stem splitter to extract vocals/instruments.", link: "https://www.lalal.ai" },
+            { name: "AIVA", category: "audio", icon: "fa-music", desc: "AI music composer for soundtracks.", link: "https://www.aiva.ai" },
+
+            // --- RESEARCH (New Category) ---
+            { name: "Consensus", category: "research", icon: "fa-book-open", desc: "AI search engine for scientific research papers.", link: "https://consensus.app" },
+            { name: "Elicit", category: "research", icon: "fa-microscope", desc: "Analyze research papers at superhuman speed.", link: "https://elicit.com" },
+            { name: "Scite", category: "research", icon: "fa-quote-right", desc: "Smart citations to verify scientific claims.", link: "https://scite.ai" },
+            { name: "ScholarAI", category: "research", icon: "fa-graduation-cap", desc: "Reliable academic AI for searching literature.", link: "https://scholarai.io" },
+            { name: "ChatPDF", category: "research", icon: "fa-file-pdf", desc: "Chat with any PDF document instantly.", link: "https://www.chatpdf.com" },
+            { name: "Humata", category: "research", icon: "fa-file-invoice", desc: "AI for faster research and document analysis.", link: "https://www.humata.ai" },
+
+            // --- PRODUCTIVITY & WRITING ---
+            { name: "Notion AI", category: "productivity", icon: "fa-pen-to-square", desc: "AI writing and organization inside Notion.", link: "https://www.notion.so/product/ai" },
+            { name: "Jasper", category: "productivity", icon: "fa-bullhorn", desc: "AI copilot for enterprise marketing content.", link: "https://www.jasper.ai" },
+            { name: "Grammarly", category: "productivity", icon: "fa-check-double", desc: "AI writing assistance for correctness and tone.", link: "https://www.grammarly.com" },
+            { name: "Copy.ai", category: "productivity", icon: "fa-copy", desc: "Marketing copy generator for blogs and ads.", link: "https://www.copy.ai" },
+            { name: "Otter.ai", category: "productivity", icon: "fa-file-audio", desc: "AI meeting assistant that records and transcribes.", link: "https://otter.ai" },
+            { name: "Fireflies.ai", category: "productivity", icon: "fa-fire-flame-curved", desc: "Automate meeting notes and transcription.", link: "https://fireflies.ai" },
+            { name: "Beautiful.ai", category: "productivity", icon: "fa-presentation-screen", desc: "Generative AI for stunning presentation slides.", link: "https://www.beautiful.ai" },
+            { name: "Gamma", category: "productivity", icon: "fa-layer-group", desc: "Create presentations and webpages in seconds.", link: "https://gamma.app" },
+            { name: "Zapier Central", category: "productivity", icon: "fa-bolt", desc: "Automate workflows between AI and apps.", link: "https://zapier.com/central" },
+            { name: "Descript", category: "productivity", icon: "fa-podcast", desc: "All-in-one video and audio editing via text.", link: "https://www.descript.com" },
+            { name: "Rewind", category: "productivity", icon: "fa-clock-rotate-left", desc: "A personalized AI that remembers everything you see.", link: "https://www.rewind.ai" },
+            { name: "Taskade", category: "productivity", icon: "fa-list-check", desc: "AI-powered productivity and task management.", link: "https://www.taskade.com" },
+            { name: "Rytr", category: "productivity", icon: "fa-pen-nib", desc: "Affordable AI writing assistant for content.", link: "https://rytr.me" },
+            { name: "Quillbot", category: "productivity", icon: "fa-rotate", desc: "Advanced paraphrasing tool to rewrite text.", link: "https://quillbot.com" },
+            { name: "Wordtune", category: "productivity", icon: "fa-wand-sparkles", desc: "AI that rewrites your thoughts for clarity.", link: "https://www.wordtune.com" },
+            { name: "Sudowrite", category: "productivity", icon: "fa-book", desc: "AI writing partner for fiction authors.", link: "https://www.sudowrite.com" },
+            { name: "Bardeen", category: "productivity", icon: "fa-robot", desc: "Browser automation to save time on repetitive tasks.", link: "https://www.bardeen.ai" },
+            { name: "Monica", category: "productivity", icon: "fa-comment-dots", desc: "All-in-one AI assistant chrome extension.", link: "https://monica.im" },
+            { name: "Tome", category: "productivity", icon: "fa-book-open-reader", desc: "AI-powered storytelling format for presentations.", link: "https://tome.app" },
+
+            // --- 3D & DESIGN ---
+            { name: "Luma Genie", category: "3d", icon: "fa-cube", desc: "Text-to-3D model generation for game devs.", link: "https://lumalabs.ai" },
+            { name: "Spline", category: "3d", icon: "fa-shapes", desc: "3D design tool with AI texture and object generation.", link: "https://spline.design" },
+            { name: "Meshy", category: "3d", icon: "fa-vector-square", desc: "Fast 3D mesh generation from text or images.", link: "https://www.meshy.ai" },
+            { name: "Tripo3D", category: "3d", icon: "fa-cubes", desc: "Fast text-to-3D model generation.", link: "https://www.tripo3d.ai" },
+            { name: "CSM AI", category: "3d", icon: "fa-cube", desc: "Common Sense Machines: 3D worlds from images.", link: "https://csm.ai" },
+            { name: "Blockade Labs", category: "3d", icon: "fa-globe", desc: "Generate 360° skyboxes and worlds for 3D.", link: "https://www.blockadelabs.com" },
+            { name: "Rodin", category: "3d", icon: "fa-cube", desc: "High fidelity 3D generation model.", link: "https://hyperhuman.deemos.com/rodin" }
+        ];
+
+        /* --- CARD RENDERING LOGIC --- */
+        const grid = document.getElementById('aiGrid');
+
+        function displayTools(toolsData) {
+            grid.innerHTML = '';
+            
+            if (toolsData.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; grid-column: 1/-1; color: var(--text-muted); padding: 2rem;">No tools found matching criteria.</div>';
+                return;
+            }
+
+            toolsData.forEach((tool, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-cat', tool.category);
+                // Stagger animation
+                card.style.animationDelay = `${Math.min(index * 0.03, 1)}s`; 
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            <div class="icon-box">
+                                <i class="fa-solid ${tool.icon}"></i>
+                            </div>
+                            <span class="category-badge">${tool.category}</span>
+                        </div>
+                        <h3>${tool.name}</h3>
+                        <p>${tool.desc}</p>
+                    </div>
+                    <a href="${tool.link}" target="_blank" class="card-btn">
+                        Visit Website <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* --- SEARCH & FILTER LOGIC --- */
+        const searchInput = document.getElementById('searchInput');
+        let currentCategory = 'all';
+
+        function filterData() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const filtered = aiTools.filter(tool => {
+                const matchesSearch = tool.name.toLowerCase().includes(searchTerm) || 
+                                    tool.desc.toLowerCase().includes(searchTerm);
+                const matchesCat = currentCategory === 'all' || tool.category === currentCategory;
+                
+                return matchesSearch && matchesCat;
+            });
+
+            displayTools(filtered);
+        }
+
+        searchInput.addEventListener('input', filterData);
+
+        function filterSelection(category) {
+            currentCategory = category;
+            
+            // Update buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                const btnText = btn.innerText.toLowerCase();
+                // Check for match
+                if(btnText.includes(category === 'image' ? 'visuals' : category) || 
+                   (category === 'all' && btnText === 'all') ||
+                   (category === '3d' && btnText.includes('3d'))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            filterData();
+        }
+
+        // Initial Load
+        displayTools(aiTools);
+
+
+        /* --- CANVAS BACKGROUND ANIMATION --- */
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 60; // Adjust for density
+        let mouse = { x: null, y: null };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() * 1) - 0.5;
+                this.speedY = (Math.random() * 1) - 0.5;
+                this.color = `rgba(139, 92, 246, ${Math.random() * 0.5})`; // Purple tint
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Bounce off edges
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+
+                // Mouse interaction
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < 150) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (150 - distance) / 150;
+                        const directionX = forceDirectionX * force * 0.5;
+                        const directionY = forceDirectionY * force * 0.5;
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    }
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(139, 92, 246, ${1 - distance/120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+    </script>
+</body>
+</html>
