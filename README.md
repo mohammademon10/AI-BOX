@@ -102,7 +102,7 @@ No build tools or setup required.
 ### 1️⃣ Clone the Repository
 
 ```
-git clone 
+git clone https://github.com/mohammademon10/AI-BOX.git
 ```
 
 ### 2️⃣ Navigate to the Project Folder
@@ -167,3 +167,4 @@ This project is licensed under the **MIT License**.
 Built with passion for the **AI & Developer Community**.
 
 > *Explore AI. Discover Tools. Build the Future.*
+
